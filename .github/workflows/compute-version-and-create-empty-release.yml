@@ -1,0 +1,74 @@
+name: Bump version number and create a release
+on:
+  workflow_call:
+    inputs:
+      update-version:
+        description: 'Whether the commit distance from the last tag should update the major, minor, patch, or pre-release version once new commits are detected'
+        default: 'patch'
+        required: false
+        type: string
+      pre-release-tag:
+        description: 'An optional pre-release symbol, used only if update-version is pre-release'
+        default: 'dev'
+    secrets:
+      token:
+        required: false
+    
+jobs:
+  Create-Release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: danysk/action-checkout@0.1.0
+      - name: Compute version
+        id: compute-version
+        run: |
+          LAST_TAG="$(git describe --tags --abbrev=0 || echo "0.1.0")"
+          if [[ "$LAST_TAG$ =~ '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$' ]]; then
+            MAJOR="${match[1]}"
+            MINOR="${match[2]}"
+            PATCH="${match[3]}"
+            case "${{ inputs.update-version }}" in
+              major)
+                COMMIT_COUNT_FROM_TAG="$(git rev-list HEAD --count || echo 1)"
+                echo "There have been $COMMIT_COUNT_FROM_TAG commits from the beginning"
+                VERSION="$COMMIT_COUNT_FROM_TAG.0.0"
+                ;;
+              minor)
+                if [[ $MAJOR == "0" ]]; then
+                  COMMIT_COUNT_FROM_TAG="$(git rev-list HEAD --count || echo 1)"
+                  echo "There have been $COMMIT_COUNT_FROM_TAG commits from the beginning"
+                else
+                  COMMIT_COUNT_FROM_TAG="$(git log --oneline "$MAJOR.0.0".. | wc -l)"
+                  echo "There have been $COMMIT_COUNT_FROM_TAG commits from the $MAJOR.0.0 version"
+                fi
+                VERSION="$MAJOR.$COMMIT_COUNT_FROM_TAG.0"
+                ;;
+              patch)
+                COMMIT_COUNT_FROM_TAG="$(git log --oneline "$MAJOR.$MINOR.0".. | wc -l)"
+                echo "There have been $COMMIT_COUNT_FROM_TAG commits from the $MAJOR.$MINOR.0 version"
+                VERSION="$$MAJOR.$MINOR.$COMMIT_COUNT_FROM_TAG"
+                ;;
+              pre-release)
+                COMMIT_COUNT_FROM_TAG="$(git log --oneline "$MAJOR.$MINOR.$PATCH".. | wc -l)"
+                echo "There have been $COMMIT_COUNT_FROM_TAG commits from the $MAJOR.$MINOR.$PATCH version"
+                VERSION="$MAJOR.$MINOR.$PATCH-${{ inputs.pre-release-tag }}$COMMIT_COUNT_FROM_TAG"
+                ;;
+              *)
+                echo "Invalid update-version ${{ inputs.update-version }}. Supported values are: 'patch' (default), 'minor', 'major', or 'pre-release'."
+                false
+                ;;
+            esac
+            echo Version has been computed as $VERSION
+            echo '::set-output name=version::$VERSION'
+          else
+            echo "Invalid last version $LATEST_TAG"
+            false
+          fi
+      - uses: ncipollo/release-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
+        name: Create GitHub Release
+        with:
+          tag: ${{ steps.compute-version.outputs.version }}"
+          replacesArtifacts: true
+          token: ${{ secrets.token }}
