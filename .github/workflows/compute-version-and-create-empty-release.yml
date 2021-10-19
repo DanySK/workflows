@@ -25,7 +25,8 @@ jobs:
       - name: Compute version
         id: compute-version
         run: |
-          LAST_TAG="$(git describe --tags --abbrev=0 || echo "0.1.0")"
+          LATEST_TAG="$(git describe --tags --abbrev=0 || echo "0.1.0")"
+          LATEST_TAG=${LATEST_TAG:=0.1.0}
           echo "Detected last version: \"$LATEST_TAG\""
           if [[ "$LATEST_TAG" =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$ ]]; then
             MAJOR="${match[1]}"
