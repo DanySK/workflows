@@ -35,11 +35,11 @@ jobs:
           match_data = regex.match(version)
           if match_data then
             puts "Major: #{match_data[1]}"
-            `echo "::set-output name=major::#{match_data[1]}"`
+            puts "::set-output name=major::#{match_data[1]}"
             puts "Minor: #{match_data[2]}"
-            `echo "::set-output name=major::#{match_data[2]}"`
+            puts "::set-output name=major::#{match_data[2]}"
             puts "Patch: #{match_data[3]}"
-            `echo "::set-output name=major::#{match_data[3]}"`
+            puts "::set-output name=major::#{match_data[3]}"
           else
             puts "Error: #{version} does not seem SemVer-compatible"
             exit 1
