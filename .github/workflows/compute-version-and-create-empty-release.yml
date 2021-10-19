@@ -28,7 +28,8 @@ jobs:
           LATEST_TAG="$(git describe --tags --abbrev=0 || echo "0.1.0")"
           export LATEST_TAG=${LATEST_TAG:=0.1.0}
           echo "Detected last version: \"$LATEST_TAG\""
-          RUBY_SCRIPT=$(cat <<RUBY
+          cat << RUBY > script.rb
+          #!/usr/bin/env ruby
           regex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$/
           version = ENV['LATEST_TAG']
           match_data = regex.match(version)
@@ -44,8 +45,9 @@ jobs:
             exit 1
           end
           RUBY
-          )
-          ruby -e "$RUBY_SCRIPT"
+          cat script.rb
+          ruby script.rb
+          rm script.rb
       - name: Compute version
         id: compute-version
         run: |
