@@ -67,7 +67,7 @@ jobs:
                 ;;
             esac
             echo Version has been computed as $VERSION
-            echo '::set-output name=version::$VERSION'
+            echo "::set-output name=version::$VERSION"
           else
             echo "Invalid last version $LATEST_TAG"
             false
