@@ -1,0 +1,15 @@
+on:
+  push:
+    branches-ignore: # Pushes on these branches won't start a build
+      - 'autodelivery**'
+      - 'bump-**'
+      - 'renovate/**'
+
+jobs:
+  # This workflow contains a single job called "build"
+  Autobump:
+    uses: DanySK/workflows/.github/workflows/compute-version-and-create-empty-release.yml@master
+    with:
+      update-version: pre-release
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
