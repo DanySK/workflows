@@ -28,6 +28,8 @@ jobs:
           LATEST_TAG="$(git describe --tags --abbrev=0 || echo "0.1.0")"
           LATEST_TAG=${LATEST_TAG:=0.1.0}
           echo "Detected last version: \"$LATEST_TAG\""
+          setopt bashrematch
+          echo "Option bashrematch set"
           if [[ "$LATEST_TAG" =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$ ]]; then
             echo "SemVer-compatible version detected. Extracting components..."
             MAJOR="${BASH_REMATCH[1]}"
