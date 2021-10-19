@@ -37,9 +37,9 @@ jobs:
             puts "Major: #{match_data[1]}"
             puts "::set-output name=major::#{match_data[1]}"
             puts "Minor: #{match_data[2]}"
-            puts "::set-output name=major::#{match_data[2]}"
+            puts "::set-output name=minor::#{match_data[2]}"
             puts "Patch: #{match_data[3]}"
-            puts "::set-output name=major::#{match_data[3]}"
+            puts "::set-output name=patch::#{match_data[3]}"
           else
             puts "Error: #{version} does not seem SemVer-compatible"
             exit 1
@@ -51,7 +51,6 @@ jobs:
       - name: Compute version
         id: compute-version
         run: |
-          echo "SemVer-compatible version detected. Extracting components..."
           MAJOR="${{ steps.extract-version.outputs.major }}"
           [[ -n "$MAJOR" ]] || echo "Unable to compute the major version" && false
           MINOR="${{ steps.extract-version.outputs.minor }}"
