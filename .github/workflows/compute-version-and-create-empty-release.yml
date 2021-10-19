@@ -29,11 +29,11 @@ jobs:
           LATEST_TAG=${LATEST_TAG:=0.1.0}
           echo "Detected last version: \"$LATEST_TAG\""
           if [[ "$LATEST_TAG" =~ ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$ ]]; then
-            MAJOR="${match[1]}"
+            MAJOR="${BASH_REMATCH[1]}"
             [[ -n "$MAJOR" ]] || echo "Unable to compute the major version" && false
-            MINOR="${match[2]}"
+            MINOR="${BASH_REMATCH[2]}"
             [[ -n "$MINOR" ]] || echo "Unable to compute the minor version" && false
-            PATCH="${match[3]}"
+            PATCH="${BASH_REMATCH[3]}"
             [[ -n "$PATCH" ]] || echo "Unable to compute the patch version" && false
             case "${{ inputs.update-version }}" in
               major)
