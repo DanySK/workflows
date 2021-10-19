@@ -10,6 +10,8 @@ on:
       pre-release-tag:
         description: 'An optional pre-release symbol, used only if update-version is pre-release'
         default: 'dev'
+        required: false
+        type: string
     secrets:
       token:
         required: false
