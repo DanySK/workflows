@@ -12,6 +12,11 @@ on:
         default: 'dev'
         required: false
         type: string
+      target-branch:
+        description: 'New releases will be created only if there are new commits on the indicated branch'
+        default: 'master'
+        required: false
+        type: string
     secrets:
       token:
         required: false
@@ -19,75 +24,16 @@ on:
 jobs:
   Create-Release:
     runs-on: ubuntu-latest
+    if: endsWith(github.ref, inputs.target-branch)
     steps:
+      - uses: danysk/workflows@master
       - name: Checkout
         uses: danysk/action-checkout@0.1.0
-      - name: Extract previous version
-        id: extract-version
-        run: |
-          LATEST_TAG="$(git describe --tags --abbrev=0 || echo "0.1.0")"
-          export LATEST_TAG=${LATEST_TAG:=0.1.0}
-          echo "Detected last version: \"$LATEST_TAG\""
-          cat << RUBY > script.rb
-          #!/usr/bin/env ruby
-          regex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$/
-          version = ENV['LATEST_TAG']
-          match_data = regex.match(version)
-          if match_data then
-            puts "Major: #{match_data[1]}"
-            puts "::set-output name=major::#{match_data[1]}"
-            puts "Minor: #{match_data[2]}"
-            puts "::set-output name=minor::#{match_data[2]}"
-            puts "Patch: #{match_data[3]}"
-            puts "::set-output name=patch::#{match_data[3]}"
-          else
-            puts "Error: #{version} does not seem SemVer-compatible"
-            exit 1
-          end
-          RUBY
-          cat script.rb
-          ruby script.rb
-          rm script.rb
       - name: Compute version
         id: compute-version
         run: |
-          MAJOR="${{ steps.extract-version.outputs.major }}"
-          [[ -n "$MAJOR" ]] || echo "Unable to compute the major version" && false
-          MINOR="${{ steps.extract-version.outputs.minor }}"
-          [[ -n "$MINOR" ]] || echo "Unable to compute the minor version" && false
-          PATCH="${{ steps.extract-version.outputs.patch }}"
-          [[ -n "$PATCH" ]] || echo "Unable to compute the patch version" && false
-          case "${{ inputs.update-version }}" in
-            major)
-              COMMIT_COUNT_FROM_TAG="$(git rev-list HEAD --count || echo 1)"
-              echo "There have been $COMMIT_COUNT_FROM_TAG commits from the beginning"
-              VERSION="$COMMIT_COUNT_FROM_TAG.0.0"
-              ;;
-            minor)
-              if [[ $MAJOR == "0" ]]; then
-                COMMIT_COUNT_FROM_TAG="$(git rev-list HEAD --count || echo 1)"
-                echo "There have been $COMMIT_COUNT_FROM_TAG commits from the beginning"
-              else
-                COMMIT_COUNT_FROM_TAG="$(git log --oneline "$MAJOR.0.0".. | wc -l)"
-                echo "There have been $COMMIT_COUNT_FROM_TAG commits from the $MAJOR.0.0 version"
-              fi
-              VERSION="$MAJOR.$COMMIT_COUNT_FROM_TAG.0"
-              ;;
-            patch)
-              COMMIT_COUNT_FROM_TAG="$(git log --oneline "$MAJOR.$MINOR.0".. | wc -l)"
-              echo "There have been $COMMIT_COUNT_FROM_TAG commits from the $MAJOR.$MINOR.0 version"
-              VERSION="$$MAJOR.$MINOR.$COMMIT_COUNT_FROM_TAG"
-              ;;
-            pre-release)
-              COMMIT_COUNT_FROM_TAG="$(git log --oneline "$MAJOR.$MINOR.$PATCH".. | wc -l)"
-              echo "There have been $COMMIT_COUNT_FROM_TAG commits from the $MAJOR.$MINOR.$PATCH version"
-              VERSION="$MAJOR.$MINOR.$PATCH-${{ inputs.pre-release-tag }}$COMMIT_COUNT_FROM_TAG"
-              ;;
-            *)
-              echo "Invalid update-version ${{ inputs.update-version }}. Supported values are: 'patch' (default), 'minor', 'major', or 'pre-release'."
-              false
-              ;;
-          esac
+          curl -o deduce_version 'https://raw.githubusercontent.com/DanySK/workflows/master/deduce_version.rb'
+          ruby deduce_version ${{ inputs.update-version }} ${{ inputs.pre-release-tag }}
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name != 'pull_request' }}
         name: Create GitHub Release
