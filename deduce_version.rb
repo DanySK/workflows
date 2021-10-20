@@ -16,7 +16,7 @@ pre_release_tag = ARGV[1]
 def count_commits(head)
   count = `git log --oneline "#{head}" | wc -l`.strip
   puts "Commits from #{head}: #{count}"
-  count
+  count.to_i
 end
 
 version = case update_version
@@ -31,5 +31,10 @@ version = case update_version
     exit 2
 end
 
-puts "This version is: #{version}"
-puts "::set-output name=version::#{version}"
+if version =~ regex then
+  puts "This version is: #{version}"
+  puts "::set-output name=version::#{version}"
+else
+  puts "The computed version is not a valid SemVer: this is likely a bug."
+  exit 3
+end
