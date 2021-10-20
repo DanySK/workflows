@@ -95,7 +95,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.signing-password }}
           SIGNING_PASSWORD: ${{ secrets.signing-password }}
         run: |
-          ${{ deploy-command }}
+          ${{ inputs.deploy-command }}
       - name: Turn off the Gradle Daemon
         shell: bash
         run: ./gradlew --stop
