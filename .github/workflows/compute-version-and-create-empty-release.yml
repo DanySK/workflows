@@ -26,13 +26,21 @@ jobs:
     runs-on: ubuntu-latest
     if: endsWith(github.ref, inputs.target-branch)
     steps:
-      - uses: danysk/workflows@master
+      - name: Compute the scripts version
+        id: script-version
+        run: |
+          # Idea: the regex matcher of Renovate keeps this string up to date automatically
+          # The version is extracted and used to access the correct version of the scripts
+          USES=$(<<TRICK_RENOVATE
+          - uses: danysk/workflows@0.1.0-dev0
+          TRICK_RENOVATE
+          echo "::set-output name=script-version::${USES#*@}"
       - name: Checkout
         uses: danysk/action-checkout@0.1.0
       - name: Compute version
         id: compute-version
         run: |
-          curl -o deduce_version 'https://raw.githubusercontent.com/DanySK/workflows/master/deduce_version.rb'
+          curl -o deduce_version 'https://raw.githubusercontent.com/DanySK/workflows/${{ steps.script-version.outputs.script-version }}/deduce_version.rb'
           ruby deduce_version ${{ inputs.update-version }} ${{ inputs.pre-release-tag }}
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name != 'pull_request' }}
