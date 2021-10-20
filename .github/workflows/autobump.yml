@@ -1,9 +1,7 @@
 on:
   push:
-    branches-ignore: # Pushes on these branches won't start a build
-      - 'autodelivery**'
-      - 'bump-**'
-      - 'renovate/**'
+    branches:
+      - master
 
 jobs:
   # This workflow contains a single job called "build"
