@@ -32,6 +32,11 @@ on:
         default: true
         required: false
         type: boolean
+      deploy-events:
+        description: 'Events that may trigger a deployment. Multiple events can be listed (the string is searched for the current os as substring)'
+        default: push, workflow_dispatch
+        required: false
+        type: string
       deploy-os:
         description: 'The operating systems from where the deployment happens. Multiple OSs can be listed (the string is searched for the current os as substring)'
         default: 'Linux'
@@ -109,6 +114,7 @@ jobs:
         if: >-
           contains(inputs.deploy-os, runner.os)
           && contains(github.repository, input.deploy-repo)
+          && contains(input.deploy-events, github.event_name)
           && (
             contains(inputs.deploy-branches, steps.branch.outputs.current_branch)
             || inputs.deploy-default-branch && steps.branch.outputs.is_default
