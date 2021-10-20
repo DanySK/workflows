@@ -12,11 +12,6 @@ on:
         default: './gradlew check --parallel'
         required: false
         type: string
-      codecov-if:
-        description: 'The condition triggering a codecov run'
-        default: "runner.os == 'Linux'"
-        required: false
-        type: string
       deploy-command:
         description: 'The condition triggering a deploy run'
         default: "./gradlew publishKotlinMavenPublicationToMavenCentralRepository"
@@ -24,9 +19,9 @@ on:
         type: string
       deploy-if:
         description: 'The condition triggering a deploy run'
-        default: "runner.os == 'Linux' && github.event_name == 'push'"
+        default: false
         required: false
-        type: string
+        type: boolean
       maven-central-username:
         description: 'Username for Maven Central'
         default: 'danysk'
@@ -80,7 +75,7 @@ jobs:
         run: |
           ${{ inputs.check-command }}
       - name: CodeCov
-        if: ${{ inputs.codecov-if }}
+        if: runner.os == 'Linux'
         uses: codecov/codecov-action@v2
       - name: Deploy
         if: ${{ inputs.deploy-if }}
