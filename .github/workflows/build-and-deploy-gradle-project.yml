@@ -1,0 +1,112 @@
+name: Build and delivery a Gradle project
+on:
+  workflow_call:
+    inputs:
+      build-command:
+        description: 'The command executed in the build phase'
+        default: './gradlew assemble --parallel'
+        required: false
+        type: string
+      check-command:
+        description: 'The command executed in the check phase'
+        default: './gradlew check --parallel'
+        required: false
+        type: string
+      codecov-if:
+        description: 'The condition triggering a codecov run'
+        default: "runner.os == 'Linux'"
+        required: false
+        type: string
+      deploy-command:
+        description: 'The condition triggering a deploy run'
+        default: "./gradlew publishKotlinMavenPublicationToMavenCentralRepository"
+        required: false
+        type: string
+      deploy-if:
+        description: 'The condition triggering a deploy run'
+        default: "runner.os == 'Linux' && github.event_name == 'push'"
+        required: false
+        type: string
+      maven-central-username:
+        description: 'Username for Maven Central'
+        default: 'danysk'
+        required: false
+        type: string
+    secrets:
+      github-token:
+        required: false
+      gradle-publish-secret:
+        required: false
+      gradle-publish-key:
+        required: false
+      maven-central-password:
+        required: false
+      signing-key:
+        required: false
+      signing-password:
+        required: false
+
+jobs:
+  Build:
+    strategy:
+      matrix:
+        os: [windows, macos, ubuntu]
+    runs-on: ${{ matrix.os }}-latest
+    env:
+      TERM: dumb
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: danysk/action-checkout@0.1.0
+      - name: Configure the Windows Pagefile
+        if: ${{ runner.os == 'Windows' }}
+        uses: al-cheb/configure-pagefile-action@v1.2
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/jdks
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build
+        shell: bash
+        run: |
+          ${{ inputs.build-command }}
+      - name: Check
+        shell: bash
+        run: |
+          ${{ inputs.check-command }}
+      - name: CodeCov
+        if: ${{ inputs.codecov-if }}
+        uses: codecov/codecov-action@v2
+      - name: Deploy
+        if: ${{ inputs.deploy-if }}
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.github-token }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.gradle-publish-secret }}
+          GRADLE_PUBLISH_KEY: ${{ secrets.gradle-publish-key }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.maven-central-password }}
+          MAVEN_CENTRAL_USERNAME: ${{ inputs.maven-central-username }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.signing-key }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.signing-password }}
+          SIGNING_PASSWORD: ${{ secrets.signing-password }}
+        run: |
+          ${{ deploy-command }}
+      - name: Turn off the Gradle Daemon
+        shell: bash
+        run: ./gradlew --stop
+      - name: Cleanup the Gradle cache
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
+      - name: Force the Gradle cleanup on Windows
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          Remove-Item -Force c:\Users\runneradmin\.gradle\caches\modules-2\modules-2.lock
+          Remove-Item -Force c:\Users\runneradmin\.gradle\caches\modules-2\gc.properties
