@@ -22,10 +22,10 @@ end
 version = case update_version
   when 'major' then "#{count_commits('HEAD')}.0.0"
   when 'minor' then "#{major}.#{count_commits(major == "0" ? 'HEAD' : "#{major}.0.0..")}.0"
-  when 'patch' then "#{major}.#{minor}.#{count_commits("#{major}.#{minor}.0..")}"
+  when 'patch' then "#{major}.#{minor}.#{count_commits(major == "0" && minor == "1" ? 'HEAD' : "#{major}.#{minor}.0..")}"
   when 'pre-release' then
     latest_stable = "#{major}.#{minor}.#{patch}"
-    "#{latest_stable}-#{pre_release_tag}#{count_commits("#{latest_stable}..")}"
+    "#{latest_stable}-#{pre_release_tag}#{count_commits(latest_stable == "0.1.0" ? 'HEAD' : "#{latest_stable}..")}"
   else
     puts "Invalid update-version #{update_version}. Supported values are: 'patch' (default), 'minor', 'major', or 'pre-release'."
     exit 2
