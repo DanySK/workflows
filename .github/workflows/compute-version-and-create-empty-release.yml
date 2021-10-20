@@ -35,6 +35,8 @@ jobs:
           - uses: danysk/workflows@0.1.0-dev0
           TRICK_RENOVATE
           )
+          echo "Scripts update line: \"$USES\""
+          echo "Computed version: \"${USES#*@}\""
           echo "::set-output name=script-version::${USES#*@}"
       - name: Checkout
         uses: danysk/action-checkout@0.1.0
