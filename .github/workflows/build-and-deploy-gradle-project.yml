@@ -116,8 +116,8 @@ jobs:
       - name: Deploy
         if: >-
           contains(inputs.deploy-os, runner.os)
-          && contains(github.repository, input.deploy-repo)
-          && contains(input.deploy-events, github.event_name)
+          && contains(github.repository, inputs.deploy-repo)
+          && contains(inputs.deploy-events, github.event_name)
           && (
             contains(inputs.deploy-branches, steps.branch.outputs.current_branch)
             || inputs.deploy-default-branch && steps.branch.outputs.is_default
