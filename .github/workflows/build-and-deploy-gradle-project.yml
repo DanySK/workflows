@@ -12,14 +12,39 @@ on:
         default: './gradlew check --parallel'
         required: false
         type: string
+      codecov-os:
+        description: 'The operating systems running codecov. Multiple OSs can be listed (the string is searched for the current os as substring)'
+        default: 'Linux'
+        required: false
+        type: string
+      deploy-branches:
+        description: 'The branches from where the deployment always happens. Multiple branches can be listed (the string is searched for the current os as substring)'
+        default: develop
+        required: false
+        type: string
       deploy-command:
         description: 'The condition triggering a deploy run'
         default: "./gradlew publishKotlinMavenPublicationToMavenCentralRepository"
         required: false
         type: string
-      deploy-if:
-        description: 'The condition triggering a deploy run'
-        default: false
+      deploy-default-branch:
+        description: 'True if deployment should always run for the default branch'
+        default: true
+        required: false
+        type: boolean
+      deploy-os:
+        description: 'The operating systems from where the deployment happens. Multiple OSs can be listed (the string is searched for the current os as substring)'
+        default: 'Linux'
+        required: false
+        type: string
+      deploy-repo:
+        description: 'The repository from which the deployments can happen. Partial names supported'
+        default: 'DanySK/'
+        required: false
+        type: string
+      deploy-tags:
+        description: 'Whether tags should always be deployed'
+        default: true
         required: false
         type: boolean
       maven-central-username:
@@ -53,6 +78,9 @@ jobs:
       # Checkout the repository
       - name: Checkout
         uses: danysk/action-checkout@0.1.0
+      - name: Get branch name
+        id: branch
+        uses: tj-actions/branch-names@v5
       - name: Configure the Windows Pagefile
         if: ${{ runner.os == 'Windows' }}
         uses: al-cheb/configure-pagefile-action@v1.2
@@ -75,10 +103,17 @@ jobs:
         run: |
           ${{ inputs.check-command }}
       - name: CodeCov
-        if: runner.os == 'Linux'
+        if: contains(inputs.codecov-os, runner.os)
         uses: codecov/codecov-action@v2
       - name: Deploy
-        if: ${{ inputs.deploy-if }}
+        if: >-
+          contains(inputs.deploy-os, runner.os)
+          && contains(github.repository, input.deploy-repo)
+          && (
+            contains(inputs.deploy-branches, steps.branch.outputs.current_branch)
+            || inputs.deploy-default-branch && steps.branch.outputs.is_default
+            || inputs.deploy-tags && steps.branch.outputs.is_tag
+          )
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.github-token }}
