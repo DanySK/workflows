@@ -12,11 +12,12 @@ on:
         default: './gradlew check --parallel'
         required: false
         type: string
-      codecov-os:
-        description: 'The operating systems running codecov. Multiple OSs can be listed (the string is searched for the current os as substring)'
-        default: 'Linux'
-        required: false
-        type: string
+# Commented out due to the 10-input limit, see: https://github.com/actions/runner/issues/1425
+#      codecov-os:
+#        description: 'The operating systems running codecov. Multiple OSs can be listed (the string is searched for the current os as substring)'
+#        default: 'Linux'
+#        required: false
+#        type: string
       deploy-branches:
         description: 'The branches from where the deployment always happens. Multiple branches can be listed (the string is searched for the current os as substring)'
         default: develop
@@ -108,7 +109,9 @@ jobs:
         run: |
           ${{ inputs.check-command }}
       - name: CodeCov
-        if: contains(inputs.codecov-os, runner.os)
+# Commented out due to the 10-input limit, see: https://github.com/actions/runner/issues/1425
+#        if: contains(inputs.codecov-os, runner.os)
+        if: contains('Linux', runner.os)
         uses: codecov/codecov-action@v2
       - name: Deploy
         if: >-
