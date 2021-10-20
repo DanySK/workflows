@@ -1,0 +1,8 @@
+name: 'Do nothing, quickly'
+description: 'This action does nothing. It is used to track the version of the scripts used for the workflows automation'
+runs:
+  using: "composite"
+  steps:
+    - name: Do nothing quickly
+      shell: bash
+      run: true
