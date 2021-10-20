@@ -38,6 +38,6 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         name: Create GitHub Release
         with:
-          tag: ${{ steps.compute-version.outputs.version }}"
+          tag: ${{ steps.compute-version.outputs.version }}
           replacesArtifacts: true
           token: ${{ secrets.token }}
