@@ -145,7 +145,7 @@ jobs:
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
           rm -f ~/.gradle/jdks/*.lock
-          rm -f ~/.gradle/jdks/*/
+          rm -rf ~/.gradle/jdks/*/
       - name: Force the Gradle cleanup on Windows
         if: ${{ runner.os == 'Windows' }}
         run: |
