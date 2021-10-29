@@ -81,7 +81,15 @@ jobs:
     env:
       TERM: dumb
     steps:
-      # Checkout the repository
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '16'
+          server-id: ossrh
+          server-username: ${{ inputs.maven-central-username }}
+          server-password: $ {{ secrets.maven-central-password }}
+          gpg-private-key: ${{ secrets.signing-key }}
+          gpg-passphrase: ${{ secrets.signing-password }}
       - name: Checkout
         uses: danysk/action-checkout@0.1.0
       - name: Get branch name
