@@ -6,7 +6,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   Autobump:
-    uses: DanySK/workflows/.github/workflows/compute-version-and-create-release.yml@0.1.0-dev49
+    uses: DanySK/workflows/.github/workflows/compute-version-and-create-release.yml@0.1.0-dev51
     with:
       update-version: pre-release
     secrets:
