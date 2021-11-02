@@ -17,6 +17,11 @@ on:
         default: 'master'
         required: false
         type: string
+      artifacts:
+        description: 'An optional set of paths representing artifacts to upload to the release. This may be a single path or a comma delimited list of paths (or globs). E.g., "release.tar.gz,foo/*.txt"'
+        default: ''
+        required: false
+        type: string
     secrets:
       token:
         required: false
@@ -45,6 +50,11 @@ jobs:
         run: |
           curl -o deduce_version 'https://raw.githubusercontent.com/DanySK/workflows/${{ steps.script-version.outputs.script-version }}/deduce_version.rb'
           ruby deduce_version ${{ inputs.update-version }} ${{ inputs.pre-release-tag }}
+      - name: Build Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name != 'pull_request' }}
         name: Create GitHub Release
@@ -52,3 +62,6 @@ jobs:
           tag: ${{ steps.compute-version.outputs.version }}
           replacesArtifacts: true
           token: ${{ secrets.token }}
+          body: ${{steps.changelog.outputs.changelog}}
+          artifacts: ${{ inputs.artifacts }}
+
