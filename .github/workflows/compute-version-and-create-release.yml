@@ -57,7 +57,7 @@ jobs:
       - name: Build Changelog
         id: changelog
         if: contains(steps.check-for-tags.outputs.tag-exists, 'true')
-        uses: mikepenz/release-changelog-builder-action@v1
+        uses: mikepenz/release-changelog-builder-action@v2
         with:
           commitMode: true
           ignorePreReleases: true
