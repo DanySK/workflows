@@ -50,8 +50,13 @@ jobs:
         run: |
           curl -o deduce_version 'https://raw.githubusercontent.com/DanySK/workflows/${{ steps.script-version.outputs.script-version }}/deduce_version.rb'
           ruby deduce_version ${{ inputs.update-version }} ${{ inputs.pre-release-tag }}
+      - name: Check whether a tag exists
+        id: check-for-tags
+        run: |
+          echo "::set-output name=tag-exists::$([ "$(git tag)" ] && echo true || echo false)"
       - name: Build Changelog
         id: changelog
+        if: steps.check-for-tags.outputs.tag-exists
         uses: mikepenz/release-changelog-builder-action@v1
         with:
           commitMode: true
