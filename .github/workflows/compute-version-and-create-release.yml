@@ -56,7 +56,7 @@ jobs:
           echo "::set-output name=tag-exists::$([ "$(git tag)" ] && echo true || echo false)"
       - name: Build Changelog
         id: changelog
-        if: steps.check-for-tags.outputs.tag-exists
+        if: contains(steps.check-for-tags.outputs.tag-exists, 'true')
         uses: mikepenz/release-changelog-builder-action@v1
         with:
           commitMode: true
