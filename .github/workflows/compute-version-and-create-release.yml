@@ -53,6 +53,9 @@ jobs:
       - name: Build Changelog
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v1
+        with:
+          commitMode: true
+          ignorePreReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: ncipollo/release-action@v1
