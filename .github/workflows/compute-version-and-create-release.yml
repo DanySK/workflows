@@ -52,7 +52,7 @@ jobs:
           ruby deduce_version ${{ inputs.update-version }} ${{ inputs.pre-release-tag }}
       - name: Create release with changelog
         if: inputs.token != 0
-        uses: danysk/create-release-action@0.1.6
+        uses: danysk/create-release-action@0.1.7
         with:
           artifacts: ${{ inputs.artifacts }}
           version: ${{ steps.compute-version.outputs.version }}
