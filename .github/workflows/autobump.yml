@@ -9,5 +9,3 @@ jobs:
     uses: DanySK/workflows/.github/workflows/compute-version-and-create-release.yml@master
     with:
       update-version: pre-release
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
