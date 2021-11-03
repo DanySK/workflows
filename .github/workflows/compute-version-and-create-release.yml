@@ -55,4 +55,4 @@ jobs:
         with:
           artifacts: ${{ inputs.artifacts }}
           version: ${{ steps.compute-version.outputs.version }}
-          token: ${{ inputs.token }}
+          token: ${{ secrets.token }}
