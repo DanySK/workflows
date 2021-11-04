@@ -123,6 +123,7 @@ jobs:
         uses: codecov/codecov-action@v2
       - name: Update Changelog
         uses: DanySK/compute-changelog-action@0.1.9
+        if: contains(inputs.deploy-os, runner.os) && contains(github.repository, inputs.deploy-repo)
         with:
           token: ${{ github.token }}
       - name: Deploy
