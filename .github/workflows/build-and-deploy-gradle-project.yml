@@ -121,6 +121,10 @@ jobs:
 #        if: contains(inputs.codecov-os, runner.os)
         if: contains('Linux', runner.os)
         uses: codecov/codecov-action@v2
+      - name: Update Changelog
+        uses: DanySK/compute-changelog-action@0.1.9
+        with:
+          token: ${{ github.token }}
       - name: Deploy
         if: >-
           contains(inputs.deploy-os, runner.os)
