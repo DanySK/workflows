@@ -121,12 +121,6 @@ jobs:
 #        if: contains(inputs.codecov-os, runner.os)
         if: contains('Linux', runner.os)
         uses: codecov/codecov-action@v2
-      - name: Update Changelog
-        uses: DanySK/compute-changelog-action@0.1.9
-        if: contains(inputs.deploy-os, runner.os) && contains(github.repository, inputs.deploy-repo)
-        continue-on-error: true
-        with:
-          token: ${{ github.token }}
       - name: Deploy
         if: >-
           contains(inputs.deploy-os, runner.os)
@@ -149,6 +143,12 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.signing-password }}
         run: |
           ${{ inputs.deploy-command }}
+      - name: Update Changelog
+        uses: DanySK/compute-changelog-action@0.1.9
+        if: contains(inputs.deploy-os, runner.os) && contains(github.repository, inputs.deploy-repo)
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
       - name: Turn off the Gradle Daemon
         shell: bash
         run: ./gradlew --stop
