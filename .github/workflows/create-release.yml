@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Build Changelog
-      uses: danysk/compute-changelog-action@0.1.34
+      uses: danysk/compute-changelog-action@0.1.40
       with:
         push-changes: false
         token: ${{ github.token }}
