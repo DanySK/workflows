@@ -9,8 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Build Changelog
-      uses: danysk/compute-changelog-action@0.1.30
+      uses: danysk/compute-changelog-action@0.1.32
       with:
+        push-changes: false
         token: ${{ github.token }}
     - uses: ncipollo/release-action@v1
       with:
