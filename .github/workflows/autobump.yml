@@ -1,3 +1,5 @@
+name: Autobump on push
+
 on:
   push:
     branches:
