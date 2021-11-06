@@ -144,7 +144,7 @@ jobs:
         run: |
           ${{ inputs.deploy-command }}
       - name: Update Changelog
-        uses: DanySK/compute-changelog-action@0.1.11
+        uses: DanySK/compute-changelog-action@0.1.23
         if: contains(inputs.deploy-os, runner.os) && contains(github.repository, inputs.deploy-repo)
         continue-on-error: true
         with:
