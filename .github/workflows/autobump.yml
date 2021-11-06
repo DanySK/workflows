@@ -5,6 +5,6 @@ on:
 
 jobs:
   Autobump:
-    uses: DanySK/workflows/.github/workflows/compute-version-and-create-release.yml@0.1.0-dev85
+    uses: DanySK/workflows/.github/workflows/compute-version-and-create-release.yml@0.1.0-dev97
     with:
       update-version: pre-release
