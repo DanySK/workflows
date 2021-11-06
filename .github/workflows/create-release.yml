@@ -8,8 +8,11 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
-    - uses: danysk/action-checkout@0.1.0
+    - name: Build Changelog
+      uses: danysk/compute-changelog-action@0.1.30
+      with:
+        token: ${{ github.token }}
     - uses: ncipollo/release-action@v1
       with:
         bodyFile: "CHANGELOG.md"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ github.token }}
