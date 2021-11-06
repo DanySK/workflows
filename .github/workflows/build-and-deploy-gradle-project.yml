@@ -73,6 +73,14 @@ on:
         required: false
 
 jobs:
+  Changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Changelog
+        uses: DanySK/compute-changelog-action@0.1.23
+        if: contains(github.event_name, 'push') && contains(github.repository, inputs.deploy-repo) 
+        with:
+          token: ${{ github.token }}
   Build:
     strategy:
       matrix:
@@ -143,12 +151,6 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.signing-password }}
         run: |
           ${{ inputs.deploy-command }}
-      - name: Update Changelog
-        uses: DanySK/compute-changelog-action@0.1.23
-        if: contains(inputs.deploy-os, runner.os) && contains(github.repository, inputs.deploy-repo)
-        continue-on-error: true
-        with:
-          token: ${{ github.token }}
       - name: Turn off the Gradle Daemon
         shell: bash
         run: ./gradlew --stop
