@@ -78,7 +78,7 @@ jobs:
     steps:
       - name: Update Changelog
         uses: DanySK/compute-changelog-action@0.1.42
-        if: contains(github.event_name, 'push') && contains(github.repository, inputs.deploy-repo) 
+        if: contains(github.event_name, 'push') && contains(github.repository, inputs.deploy-repo) && startsWith(github.ref, 'refs/heads/') 
         with:
           token: ${{ github.token }}
   Build:
