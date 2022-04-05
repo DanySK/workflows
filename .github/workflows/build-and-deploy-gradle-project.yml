@@ -128,7 +128,7 @@ jobs:
 # Commented out due to the 10-input limit, see: https://github.com/actions/runner/issues/1425
 #        if: contains(inputs.codecov-os, runner.os)
         if: contains('Linux', runner.os)
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
       - name: Deploy
         if: >-
           contains(inputs.deploy-os, runner.os)
