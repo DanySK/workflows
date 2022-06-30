@@ -9,6 +9,8 @@ jobs:
   autobump:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: DanySK/action-checkout@0.2.1
       - uses: paulhatch/semantic-version@v4.0.2
         id: version
         with:
@@ -18,7 +20,6 @@ jobs:
           format: "${major}.${minor}.${patch}-dev${increment}"
           bump_each_commit: true
       - name: Release
-        if: matrix.os == 'ubuntu'
         uses: ncipollo/release-action@v1.10.0
         with:
           tag: ${{ steps.version.outputs.version_tag }}
