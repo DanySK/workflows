@@ -3,9 +3,7 @@ on:
   issue_comment:
     types: [created]
   workflow_call:
-    secrets:
-      GITHUB_TOKEN:
-        required: true
+
 jobs:
   rebase:
     name: Rebase
