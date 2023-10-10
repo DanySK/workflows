@@ -48,7 +48,7 @@ jobs:
           curl -o deduce_version 'https://raw.githubusercontent.com/DanySK/workflows/${{ steps.script-version.outputs.script-version }}/deduce_version.rb'
           ruby deduce_version ${{ inputs.update-version }} ${{ inputs.pre-release-tag }}
       - name: Create release with changelog
-        uses: danysk/create-release-action@0.1.28
+        uses: danysk/create-release-action@0.1.29
         with:
           artifacts: ${{ inputs.artifacts }}
           version: ${{ steps.compute-version.outputs.version }}
