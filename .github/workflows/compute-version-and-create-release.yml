@@ -41,7 +41,7 @@ jobs:
           echo "Computed version: \"${USES#*@}\""
           echo "::set-output name=script-version::${USES#*@}"
       - name: Checkout
-        uses: danysk/action-checkout@0.2.22
+        uses: danysk/action-checkout@0.2.24
       - name: Compute version
         id: compute-version
         run: |
