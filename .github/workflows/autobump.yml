@@ -20,7 +20,7 @@ jobs:
           format: "${major}.${minor}.${patch}-dev${increment}"
           bump_each_commit: true
       - name: Release
-        uses: ncipollo/release-action@v1.18.0
+        uses: ncipollo/release-action@v1.19.2
         with:
           tag: ${{ steps.version.outputs.version_tag }}
           allowUpdates: true
